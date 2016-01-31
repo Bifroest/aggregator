@@ -1,13 +1,13 @@
-package com.goodgame.profiling.graphite_aggregator.systems;
+package io.bifroest.aggregator.systems;
 
 import java.nio.file.Path;
 
-import com.goodgame.profiling.commons.boot.InitD;
-import com.goodgame.profiling.commons.systems.common.AbstractCommonEnvironment;
-import com.goodgame.profiling.graphite_aggregator.systems.cassandra.CassandraAccessLayer;
-import com.goodgame.profiling.graphite_aggregator.systems.cassandra.EnvironmentWithMutableCassandra;
-import com.goodgame.profiling.graphite_retentions.RetentionConfiguration;
-import com.goodgame.profiling.graphite_retentions.bootloader.EnvironmentWithMutableRetentionStrategy;
+import io.bifroest.commons.boot.InitD;
+import io.bifroest.aggregator.systems.cassandra.CassandraAccessLayer;
+import io.bifroest.aggregator.systems.cassandra.EnvironmentWithMutableCassandra;
+import io.bifroest.commons.environment.AbstractCommonEnvironment;
+import io.bifroest.retentions.RetentionConfiguration;
+import io.bifroest.retentions.bootloader.EnvironmentWithMutableRetentionStrategy;
 
 public class AggregatorEnvironment extends AbstractCommonEnvironment implements EnvironmentWithMutableRetentionStrategy,
         EnvironmentWithMutableCassandra {

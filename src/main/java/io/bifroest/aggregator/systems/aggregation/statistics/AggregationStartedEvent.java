@@ -1,6 +1,6 @@
-package com.goodgame.profiling.graphite_aggregator.systems.aggregation.statistics;
+package io.bifroest.aggregator.systems.aggregation.statistics;
 
-import com.goodgame.profiling.commons.statistics.process.ProcessStartedEvent;
+import io.bifroest.commons.statistics.process.ProcessStartedEvent;
 
 public class AggregationStartedEvent extends ProcessStartedEvent {
 

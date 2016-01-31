@@ -1,9 +1,9 @@
-package com.goodgame.profiling.graphite_aggregator.systems.aggregation.statistics;
+package io.bifroest.aggregator.systems.aggregation.statistics;
 
 import java.time.Instant;
 
-import com.goodgame.profiling.commons.statistics.EventWithInstant;
-import com.goodgame.profiling.graphite_retentions.RetentionTable;
+import io.bifroest.commons.statistics.EventWithInstant;
+import io.bifroest.retentions.RetentionTable;
 
 public class AggregationEvent implements EventWithInstant {
     private final Instant when;

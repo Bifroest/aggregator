@@ -1,4 +1,4 @@
-package com.goodgame.profiling.graphite_aggregator.systems.cassandra;
+package io.bifroest.aggregator.systems.cassandra;
 
 public interface EnvironmentWithMutableCassandra extends EnvironmentWithCassandra {
 

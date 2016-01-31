@@ -1,4 +1,4 @@
-package com.goodgame.profiling.graphite_aggregator.systems.aggregation;
+package io.bifroest.aggregator.systems.aggregation;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -24,16 +24,16 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.goodgame.profiling.commons.model.Interval;
-import com.goodgame.profiling.commons.model.Metric;
-import com.goodgame.profiling.commons.statistics.aggregation.MaxAggregation;
-import com.goodgame.profiling.commons.statistics.eventbus.EventBusImpl;
-import com.goodgame.profiling.commons.statistics.eventbus.EventBusManager;
-import com.goodgame.profiling.graphite_aggregator.systems.AggregatorEnvironment;
-import com.goodgame.profiling.graphite_aggregator.systems.cassandra.CassandraAccessLayer;
-import com.goodgame.profiling.graphite_retentions.RetentionConfiguration;
-import com.goodgame.profiling.graphite_retentions.RetentionLevel;
-import com.goodgame.profiling.graphite_retentions.RetentionTable;
+import io.bifroest.commons.model.Interval;
+import io.bifroest.commons.model.Metric;
+import io.bifroest.commons.statistics.aggregation.MaxAggregation;
+import io.bifroest.commons.statistics.eventbus.EventBusImpl;
+import io.bifroest.commons.statistics.eventbus.EventBusManager;
+import io.bifroest.aggregator.systems.AggregatorEnvironment;
+import io.bifroest.aggregator.systems.cassandra.CassandraAccessLayer;
+import io.bifroest.retentions.RetentionConfiguration;
+import io.bifroest.retentions.RetentionLevel;
+import io.bifroest.retentions.RetentionTable;
 
 public class AggregatorTaskTest {
 

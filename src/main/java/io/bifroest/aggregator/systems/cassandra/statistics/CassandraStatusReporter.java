@@ -1,4 +1,4 @@
-package com.goodgame.profiling.graphite_aggregator.systems.cassandra.statistics;
+package io.bifroest.aggregator.systems.cassandra.statistics;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,12 +7,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kohsuke.MetaInfServices;
 
-import com.goodgame.profiling.commons.statistics.WriteToStorageEvent;
-import com.goodgame.profiling.commons.statistics.eventbus.EventBusManager;
-import com.goodgame.profiling.commons.statistics.eventbus.EventBusRegistrationPoint;
-import com.goodgame.profiling.commons.statistics.gathering.StatisticGatherer;
-import com.goodgame.profiling.commons.statistics.storage.MetricStorage;
-import com.goodgame.profiling.graphite_retentions.RetentionTable;
+import io.bifroest.commons.statistics.WriteToStorageEvent;
+import io.bifroest.commons.statistics.eventbus.EventBusManager;
+import io.bifroest.commons.statistics.eventbus.EventBusRegistrationPoint;
+import io.bifroest.commons.statistics.gathering.StatisticGatherer;
+import io.bifroest.commons.statistics.storage.MetricStorage;
+import io.bifroest.retentions.RetentionTable;
 
 @MetaInfServices
 public class CassandraStatusReporter implements StatisticGatherer {

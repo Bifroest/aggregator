@@ -1,6 +1,6 @@
-package com.goodgame.profiling.graphite_aggregator.systems.cassandra.statistics;
+package io.bifroest.aggregator.systems.cassandra.statistics;
 
-import com.goodgame.profiling.graphite_retentions.RetentionTable;
+import io.bifroest.retentions.RetentionTable;
 
 public class DropTableEvent {
 

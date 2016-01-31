@@ -1,4 +1,4 @@
-package com.goodgame.profiling.graphite_aggregator.systems.aggregation;
+package io.bifroest.aggregator.systems.aggregation;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -10,14 +10,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.datastax.driver.core.exceptions.DriverException;
-import com.goodgame.profiling.commons.model.Metric;
-import com.goodgame.profiling.commons.statistics.eventbus.EventBusManager;
-import com.goodgame.profiling.graphite_aggregator.systems.aggregation.statistics.AggregationEvent;
-import com.goodgame.profiling.graphite_aggregator.systems.cassandra.CassandraAccessLayer;
-import com.goodgame.profiling.graphite_aggregator.systems.cassandra.EnvironmentWithCassandra;
-import com.goodgame.profiling.graphite_retentions.RetentionLevel;
-import com.goodgame.profiling.graphite_retentions.RetentionTable;
-import com.goodgame.profiling.graphite_retentions.bootloader.EnvironmentWithRetentionStrategy;
+import io.bifroest.commons.model.Metric;
+import io.bifroest.commons.statistics.eventbus.EventBusManager;
+import io.bifroest.aggregator.systems.aggregation.statistics.AggregationEvent;
+import io.bifroest.aggregator.systems.cassandra.CassandraAccessLayer;
+import io.bifroest.aggregator.systems.cassandra.EnvironmentWithCassandra;
+import io.bifroest.retentions.RetentionLevel;
+import io.bifroest.retentions.RetentionTable;
+import io.bifroest.retentions.bootloader.EnvironmentWithRetentionStrategy;
 
 public class AggregatorTask<E extends EnvironmentWithCassandra & EnvironmentWithRetentionStrategy> implements Runnable {
     private static final Logger log = LogManager.getLogger();
@@ -72,7 +72,7 @@ public class AggregatorTask<E extends EnvironmentWithCassandra & EnvironmentWith
 
         RetentionTable target = new RetentionTable( targetLevel, table.getInterval().start() / targetLevel.blockSize() );
         CassandraAccessLayer database = environment.cassandraAccessLayer();
-        Collection<Metric> aggregatedMetrics = com.goodgame.profiling.graphite_retentions.Aggregator.aggregate(
+        Collection<Metric> aggregatedMetrics = io.bifroest.retentions.Aggregator.aggregate(
                 name,
                 database.loadUnorderedMetrics( source, name ),
                 source.getInterval(),

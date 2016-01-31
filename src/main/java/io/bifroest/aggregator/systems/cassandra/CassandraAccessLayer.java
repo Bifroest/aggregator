@@ -1,4 +1,4 @@
-package com.goodgame.profiling.graphite_aggregator.systems.cassandra;
+package io.bifroest.aggregator.systems.cassandra;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -19,12 +19,12 @@ import com.datastax.driver.core.TableMetadata;
 import com.datastax.driver.core.exceptions.WriteTimeoutException;
 import com.datastax.driver.core.querybuilder.Clause;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.goodgame.profiling.commons.model.Metric;
-import com.goodgame.profiling.commons.statistics.eventbus.EventBusManager;
-import com.goodgame.profiling.graphite_aggregator.systems.cassandra.statistics.CreateTableEvent;
-import com.goodgame.profiling.graphite_aggregator.systems.cassandra.statistics.DropTableEvent;
-import com.goodgame.profiling.graphite_retentions.RetentionConfiguration;
-import com.goodgame.profiling.graphite_retentions.RetentionTable;
+import io.bifroest.commons.model.Metric;
+import io.bifroest.commons.statistics.eventbus.EventBusManager;
+import io.bifroest.aggregator.systems.cassandra.statistics.CreateTableEvent;
+import io.bifroest.aggregator.systems.cassandra.statistics.DropTableEvent;
+import io.bifroest.retentions.RetentionConfiguration;
+import io.bifroest.retentions.RetentionTable;
 
 public class CassandraAccessLayer {
 

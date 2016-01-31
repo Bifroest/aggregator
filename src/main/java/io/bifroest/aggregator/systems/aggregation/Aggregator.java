@@ -1,4 +1,4 @@
-package com.goodgame.profiling.graphite_aggregator.systems.aggregation;
+package io.bifroest.aggregator.systems.aggregation;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -14,16 +14,16 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.goodgame.profiling.commons.statistics.eventbus.EventBusManager;
-import com.goodgame.profiling.commons.systems.configuration.EnvironmentWithJSONConfiguration;
-import com.goodgame.profiling.graphite_aggregator.systems.aggregation.statistics.AggregationFinishedEvent;
-import com.goodgame.profiling.graphite_aggregator.systems.aggregation.statistics.AggregationStartedEvent;
-import com.goodgame.profiling.graphite_aggregator.systems.aggregation.statistics.SingleAggregationSubmitted;
-import com.goodgame.profiling.graphite_aggregator.systems.aggregation.statistics.SingleAggregationTerminated;
-import com.goodgame.profiling.graphite_aggregator.systems.cassandra.EnvironmentWithCassandra;
-import com.goodgame.profiling.graphite_retentions.RetentionLevel;
-import com.goodgame.profiling.graphite_retentions.RetentionTable;
-import com.goodgame.profiling.graphite_retentions.bootloader.EnvironmentWithRetentionStrategy;
+import io.bifroest.commons.statistics.eventbus.EventBusManager;
+import io.bifroest.aggregator.systems.aggregation.statistics.AggregationFinishedEvent;
+import io.bifroest.aggregator.systems.aggregation.statistics.AggregationStartedEvent;
+import io.bifroest.aggregator.systems.aggregation.statistics.SingleAggregationSubmitted;
+import io.bifroest.aggregator.systems.aggregation.statistics.SingleAggregationTerminated;
+import io.bifroest.aggregator.systems.cassandra.EnvironmentWithCassandra;
+import io.bifroest.commons.configuration.EnvironmentWithJSONConfiguration;
+import io.bifroest.retentions.RetentionLevel;
+import io.bifroest.retentions.RetentionTable;
+import io.bifroest.retentions.bootloader.EnvironmentWithRetentionStrategy;
 
 public class Aggregator<E extends EnvironmentWithCassandra & EnvironmentWithRetentionStrategy & EnvironmentWithJSONConfiguration> implements Runnable {
     private static final Logger log = LogManager.getLogger();

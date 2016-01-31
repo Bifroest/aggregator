@@ -1,6 +1,6 @@
-package com.goodgame.profiling.graphite_aggregator.systems.cassandra.statistics;
+package io.bifroest.aggregator.systems.cassandra.statistics;
 
-import com.goodgame.profiling.graphite_retentions.RetentionTable;
+import io.bifroest.retentions.RetentionTable;
 
 // May be fired multiple times, because createTableIfNecessary doesn't know if if actually created a table.
 public class CreateTableEvent {

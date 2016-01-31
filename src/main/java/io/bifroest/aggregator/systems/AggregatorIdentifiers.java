@@ -1,4 +1,4 @@
-package com.goodgame.profiling.graphite_aggregator.systems;
+package io.bifroest.aggregator.systems;
 
 public class AggregatorIdentifiers {
 
