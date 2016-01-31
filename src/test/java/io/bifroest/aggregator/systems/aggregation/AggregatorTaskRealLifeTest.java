@@ -47,7 +47,7 @@ public class AggregatorTaskRealLifeTest {
 
     @Before
     public void createMocks() {
-        EventBusManager.setEventBus( new EventBusImpl() );
+        EventBusManager.setEventBus( new EventBusImpl(), EventBusManager.EventBusForce.VROOM );
 
         MockitoAnnotations.initMocks( this );
         when( environment.cassandraAccessLayer() ).thenReturn( database );
