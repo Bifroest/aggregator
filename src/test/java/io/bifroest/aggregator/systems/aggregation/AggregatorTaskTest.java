@@ -29,6 +29,7 @@ import io.bifroest.commons.model.Metric;
 import io.bifroest.commons.statistics.aggregation.MaxAggregation;
 import io.bifroest.commons.statistics.eventbus.EventBusImpl;
 import io.bifroest.commons.statistics.eventbus.EventBusManager;
+import io.bifroest.commons.statistics.eventbus.EventBusManager.EventBusForce;
 import io.bifroest.aggregator.systems.AggregatorEnvironment;
 import io.bifroest.aggregator.systems.cassandra.CassandraAccessLayer;
 import io.bifroest.retentions.RetentionConfiguration;
@@ -56,7 +57,7 @@ public class AggregatorTaskTest {
 
     @Before
     public void createMocks() {
-        EventBusManager.setEventBus( new EventBusImpl() );
+        EventBusManager.setEventBus( new EventBusImpl(), EventBusForce.VROOM );
 
         MockitoAnnotations.initMocks( this );
         when( environment.cassandraAccessLayer() ).thenReturn( database );
