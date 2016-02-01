@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
+import java.util.Collections;
 
 import com.datastax.driver.core.Session;
 import io.bifroest.retentions.RetentionConfiguration;
@@ -70,6 +71,25 @@ public class CassandraAccessLayerDryRunTests {
         RetentionTable someTable = new RetentionTable(retentionLevel, someBlockIndex);
 
         subject.dropTable(someTable);
+
+        verifyZeroInteractions(cluster);
+    }
+
+    @Test
+    public void metricsAreNotInsertedInDryRun() {
+        // duplication & extremely verbose
+        String someLevelName = "precise";
+        long someSecondsPerDataPoint = 20;
+        long someBlockNumber = 10;
+        long someBlockSize = 40;
+        String noNextLevel = null;
+        long someBlockIndex = 42;
+
+        RetentionLevel retentionLevel = new RetentionLevel(someLevelName, someSecondsPerDataPoint, someBlockNumber, someBlockSize, noNextLevel);
+
+        RetentionTable someTable = new RetentionTable(retentionLevel, someBlockIndex);
+
+        subject.insertMetrics(someTable, Collections.emptyList());
 
         verifyZeroInteractions(cluster);
     }
