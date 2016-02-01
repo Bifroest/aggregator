@@ -9,13 +9,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Cluster.Builder;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.Statement;
-import com.datastax.driver.core.TableMetadata;
 import com.datastax.driver.core.exceptions.WriteTimeoutException;
 import com.datastax.driver.core.querybuilder.Clause;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
@@ -42,7 +38,7 @@ public class CassandraAccessLayer {
     private final Duration waitAfterWriteTimeout;
 
     private final RetentionConfiguration retention;
-    private Cluster cluster;
+    private CassandraClusterWrapper wrappedCluster;
     private Session session = null;
 
     private final boolean dryRun;
@@ -63,16 +59,7 @@ public class CassandraAccessLayer {
     }
 
     public void open() {
-        if ( cluster == null || session == null ) {
-            Builder builder = Cluster.builder();
-            builder.addContactPoints( hosts );
-            builder.withSocketOptions( ( new SocketOptions().setReadTimeoutMillis( (int)readTimeout.toMillis() ) ) );
-            if ( user != null && pass != null && !user.isEmpty() && !pass.isEmpty() ) {
-                builder = builder.withCredentials( user, pass );
-            }
-            cluster = builder.build();
-            session = cluster.connect( keyspace );
-        }
+        session = wrappedCluster.open();
     }
 
     public void close() {
@@ -80,22 +67,21 @@ public class CassandraAccessLayer {
             session.close();
             session = null;
         }
-        if ( cluster != null ) {
-            cluster.close();
-            cluster = null;
+        if ( wrappedCluster != null ) {
+            wrappedCluster.close();
         }
     }
 
     public Iterable<RetentionTable> loadTables() {
         List<RetentionTable> ret = new ArrayList<>();
 
-        Collection<TableMetadata> metadatas = cluster.getMetadata().getKeyspace( keyspace ).getTables();
+        Collection<String> tableNames = wrappedCluster.getTableNames();
 
-        for ( TableMetadata metadata : metadatas ) {
-            if ( RetentionTable.canCreateTable( metadata.getName(), retention ) ) {
-                ret.add( new RetentionTable( metadata.getName(), retention ) );
+        for ( String tableName : tableNames ) {
+            if ( RetentionTable.canCreateTable( tableName, retention ) ) {
+                ret.add( new RetentionTable( tableName, retention ) );
             } else {
-                log.warn( "Table " + metadata.getName() + " doesn't match format." );
+                log.warn( "Table " + tableName + " doesn't match format." );
             }
         }
 
@@ -202,9 +188,9 @@ public class CassandraAccessLayer {
         if ( session == null ) {
             open();
         }
-        Collection<TableMetadata> tables = cluster.getMetadata().getKeyspace( keyspace ).getTables();
-        for ( TableMetadata meta : tables ) {
-            if ( meta.getName().equalsIgnoreCase( table.tableName() ) ) {
+        Collection<String> tableNames = wrappedCluster.getTableNames();
+        for ( String tableName : tableNames ) {
+            if ( tableName.equalsIgnoreCase( table.tableName() ) ) {
                 return;
             }
         }
