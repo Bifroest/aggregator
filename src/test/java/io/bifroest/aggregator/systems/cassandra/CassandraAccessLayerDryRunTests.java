@@ -1,12 +1,15 @@
 package io.bifroest.aggregator.systems.cassandra;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 
 import com.datastax.driver.core.Session;
 import io.bifroest.retentions.RetentionConfiguration;
+import io.bifroest.retentions.RetentionLevel;
+import io.bifroest.retentions.RetentionTable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -50,5 +53,24 @@ public class CassandraAccessLayerDryRunTests {
 
         verify(cluster).close();
         verify(session).close();
+    }
+
+    @Test
+    public void tablesAreNotDroppedDuringDryRun() {
+        // duplication & extremely verbose
+        String someLevelName = "precise";
+        long someSecondsPerDataPoint = 20;
+        long someBlockNumber = 10;
+        long someBlockSize = 40;
+        String noNextLevel = null;
+        long someBlockIndex = 42;
+
+        RetentionLevel retentionLevel = new RetentionLevel(someLevelName, someSecondsPerDataPoint, someBlockNumber, someBlockSize, noNextLevel);
+
+        RetentionTable someTable = new RetentionTable(retentionLevel, someBlockIndex);
+
+        subject.dropTable(someTable);
+
+        verifyZeroInteractions(cluster);
     }
 }
