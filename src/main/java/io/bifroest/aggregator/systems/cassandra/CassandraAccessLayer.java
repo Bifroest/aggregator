@@ -30,28 +30,19 @@ public class CassandraAccessLayer {
     private static final String COL_TIME = "timestamp";
     private static final String COL_VALUE = "value";
 
-    private final String user;
-    private final String pass;
-    private final String keyspace;
-    private final String[] hosts;
-    private final Duration readTimeout;
     private final Duration waitAfterWriteTimeout;
 
     private final RetentionConfiguration retention;
-    private CassandraClusterWrapper wrappedCluster;
+    private final CassandraClusterWrapper wrappedCluster;
     private Session session = null;
 
     private final boolean dryRun;
 
-    public CassandraAccessLayer( String user, String pass, String keyspace, String[] hosts, RetentionConfiguration retention, boolean dryRun, Duration readTimeout, Duration waitAfterWriteTimeout ) {
+    public CassandraAccessLayer( CassandraClusterWrapper wrappedCluster, RetentionConfiguration retention, boolean dryRun, Duration waitAfterWriteTimeout ) {
         this.retention = retention;
-        this.user = user;
-        this.pass = pass;
-        this.keyspace = keyspace;
-        this.hosts = hosts;
         this.dryRun = dryRun;
-        this.readTimeout = readTimeout;
         this.waitAfterWriteTimeout = waitAfterWriteTimeout;
+        this.wrappedCluster = wrappedCluster;
 
         if ( dryRun ) {
             log.warn( "Running with dryRun, NOT ACTUALLY DOING ANYTHING!!!" );

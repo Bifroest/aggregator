@@ -27,7 +27,7 @@ public final class DirectClusterWrapper implements CassandraClusterWrapper {
     private Cluster cluster;
     private Session session;
 
-    public DirectClusterWrapper(String keyspace, String user, String pass, String[] hosts, Duration readTimeout) {
+    public DirectClusterWrapper(String[] hosts, String keyspace, String user, String pass, Duration readTimeout) {
         this.keyspace = keyspace;
         this.user = user;
         this.pass = pass;

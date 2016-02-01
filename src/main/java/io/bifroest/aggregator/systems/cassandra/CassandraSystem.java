@@ -46,7 +46,8 @@ public class CassandraSystem<E extends EnvironmentWithJSONConfiguration & Enviro
         boolean dryRun = config.optBoolean( "dry-run", false );
         Duration readTimeout = config.has( "read-timeout" ) ? new DurationParser().parse( config.getString( "read-timeout" ) ) : Duration.ofSeconds( 12 );
         Duration waitAfterWriteTimeout = config.has( "wait-after-write-timeout" ) ? new DurationParser().parse( config.getString( "wait-after-write-timeout" ) ) : Duration.ZERO;
-        cassandra = new CassandraAccessLayer( username, password, keyspace, seeds, environment.retentions(), dryRun, readTimeout, waitAfterWriteTimeout );
+        CassandraClusterWrapper wrappedCluster = new DirectClusterWrapper(seeds, keyspace, username, password, readTimeout);
+        cassandra = new CassandraAccessLayer( wrappedCluster, environment.retentions(), dryRun, waitAfterWriteTimeout );
 
         cassandra.open();
         environment.setCassandraAccessLayer( cassandra );
