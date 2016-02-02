@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class CassandraAccessLayerDryRunTests {
+public class CassandraAccessLayerDryRunTest {
     @Mock
     public CassandraClusterWrapper cluster;
 

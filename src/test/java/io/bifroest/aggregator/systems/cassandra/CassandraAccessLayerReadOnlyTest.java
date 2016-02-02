@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class CassandraAccessLayerReadOnlyTests {
+public class CassandraAccessLayerReadOnlyTest {
     @Mock
     public CassandraClusterWrapper cluster;
 
