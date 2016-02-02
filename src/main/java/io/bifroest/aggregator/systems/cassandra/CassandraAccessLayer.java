@@ -63,7 +63,7 @@ public class CassandraAccessLayer {
         }
     }
 
-    public Iterable<RetentionTable> loadTables() {
+    public Collection<RetentionTable> loadTables() {
         List<RetentionTable> ret = new ArrayList<>();
 
         Collection<String> tableNames = wrappedCluster.getTableNames();
