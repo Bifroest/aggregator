@@ -1,10 +1,9 @@
 package io.bifroest.aggregator.systems.cassandra;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 
 import com.datastax.driver.core.Session;
@@ -92,5 +91,27 @@ public class CassandraAccessLayerDryRunTests {
         subject.insertMetrics(someTable, Collections.emptyList());
 
         verifyZeroInteractions(cluster);
+    }
+
+    @Test
+    public void createTableIfNecessaryDoesNotCreateTablesInDryRun() {
+        // duplication & extremely verbose
+        String someLevelName = "precise";
+        long someSecondsPerDataPoint = 20;
+        long someBlockNumber = 10;
+        long someBlockSize = 40;
+        String noNextLevel = null;
+        long someBlockIndex = 42;
+
+        RetentionLevel retentionLevel = new RetentionLevel(someLevelName, someSecondsPerDataPoint, someBlockNumber, someBlockSize, noNextLevel);
+
+        RetentionTable someTable = new RetentionTable(retentionLevel, someBlockIndex);
+
+        when(cluster.getTableNames()).thenReturn(Collections.emptyList());
+        when(cluster.open()).thenReturn(session);
+
+        subject.createTableIfNecessary(someTable);
+
+        verifyZeroInteractions(session);
     }
 }
