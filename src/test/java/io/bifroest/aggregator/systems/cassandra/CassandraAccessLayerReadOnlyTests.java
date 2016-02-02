@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -41,6 +42,15 @@ public class CassandraAccessLayerReadOnlyTests {
     @Test
     public void noTablesInCassandraResultInNoRetentionTables() {
         when(cluster.getTableNames()).thenReturn(Collections.emptyList());
+
+        Collection<RetentionTable> retentionTables = subject.loadTables();
+
+        assertThat(retentionTables.isEmpty(), is(true));
+    }
+
+    @Test
+    public void tablesWithMalformedNamesAreRejected() {
+        when(cluster.getTableNames()).thenReturn(Arrays.asList("invalid_name_1", "invalid_name_2"));
 
         Collection<RetentionTable> retentionTables = subject.loadTables();
 
