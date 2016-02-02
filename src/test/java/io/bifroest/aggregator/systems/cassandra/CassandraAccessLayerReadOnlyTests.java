@@ -1,5 +1,6 @@
 package io.bifroest.aggregator.systems.cassandra;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 import com.datastax.driver.core.Session;
 import io.bifroest.retentions.RetentionConfiguration;
+import io.bifroest.retentions.RetentionLevel;
 import io.bifroest.retentions.RetentionTable;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,5 +72,31 @@ public class CassandraAccessLayerReadOnlyTests {
 
         assertThat(retentionTables.isEmpty(), is(true));
         verify(retentionConfiguration).getLevelForName(someLevelName);
+    }
+
+    @Test
+    public void tablesWithRetentionLevelAreLoadedAndReturned() {
+        String someLevelName = "precise";
+        long someBlockIndex = 509;
+
+        // duplication & extremely verbose
+        long someSecondsPerDataPoint = 20;
+        long someBlockNumber = 10;
+        long someBlockSize = 40;
+        String noNextLevel = null;
+
+        RetentionLevel retentionLevel = new RetentionLevel(someLevelName, someSecondsPerDataPoint, someBlockNumber, someBlockSize, noNextLevel);
+
+        when(cluster.getTableNames()).thenReturn(Arrays.asList("g" + someLevelName + RetentionTable.SEPARATOR_OF_MADNESS + someBlockIndex));
+        when(retentionConfiguration.getLevelForName(someLevelName)).thenReturn(Optional.of(retentionLevel));
+
+        Collection<RetentionTable> retentionTables = subject.loadTables();
+
+        assertThat(retentionTables.size(), is(1));
+
+        RetentionTable createdTable = retentionTables.iterator().next();
+
+        assertThat(createdTable.level(), is(retentionLevel));
+        assertThat(createdTable.block(), is(someBlockIndex));
     }
 }
