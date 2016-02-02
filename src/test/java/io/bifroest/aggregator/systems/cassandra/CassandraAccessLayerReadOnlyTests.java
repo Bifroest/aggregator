@@ -2,12 +2,14 @@ package io.bifroest.aggregator.systems.cassandra;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import com.datastax.driver.core.Session;
 import io.bifroest.retentions.RetentionConfiguration;
@@ -55,5 +57,18 @@ public class CassandraAccessLayerReadOnlyTests {
         Collection<RetentionTable> retentionTables = subject.loadTables();
 
         assertThat(retentionTables.isEmpty(), is(true));
+    }
+
+    @Test
+    public void tablesWithoutARetentionLevelAreRejected() {
+        String someLevelName = "level";
+
+        when(cluster.getTableNames()).thenReturn(Arrays.asList("g" + someLevelName + RetentionTable.SEPARATOR_OF_MADNESS + "42"));
+        when(retentionConfiguration.getLevelForName(someLevelName)).thenReturn(Optional.empty());
+
+        Collection<RetentionTable> retentionTables = subject.loadTables();
+
+        assertThat(retentionTables.isEmpty(), is(true));
+        verify(retentionConfiguration).getLevelForName(someLevelName);
     }
 }
