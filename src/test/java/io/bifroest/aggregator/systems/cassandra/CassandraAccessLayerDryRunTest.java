@@ -20,10 +20,10 @@ public class CassandraAccessLayerDryRunTest {
     public CassandraClusterWrapper cluster;
 
     @Mock
-    public RetentionConfiguration retentionConfiguration;
+    public CassandraSession session;
 
     @Mock
-    public Session session;
+    public RetentionConfiguration retentionConfiguration;
 
     public boolean doDryRun = true;
 
@@ -34,7 +34,7 @@ public class CassandraAccessLayerDryRunTest {
     @Before
     public void createSubject() {
         MockitoAnnotations.initMocks(this);
-        subject = new CassandraAccessLayer(cluster, retentionConfiguration, doDryRun, waitBetweenWrites);
+        subject = new CassandraAccessLayer(cluster, retentionConfiguration, doDryRun);
     }
 
     @Test

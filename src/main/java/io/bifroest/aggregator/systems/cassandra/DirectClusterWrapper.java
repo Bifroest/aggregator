@@ -23,20 +23,22 @@ public final class DirectClusterWrapper implements CassandraClusterWrapper {
     private final String pass;
     private final String[] hosts;
     private final Duration readTimeout;
+    private final Duration waitAfterWriteTimeout;
 
     private Cluster cluster;
     private Session session;
 
-    public DirectClusterWrapper(String[] hosts, String keyspace, String user, String pass, Duration readTimeout) {
+    public DirectClusterWrapper(String[] hosts, String keyspace, String user, String pass, Duration readTimeout, Duration waitAfterWriteTimeout) {
         this.keyspace = keyspace;
         this.user = user;
         this.pass = pass;
         this.hosts = hosts;
         this.readTimeout = readTimeout;
+        this.waitAfterWriteTimeout = waitAfterWriteTimeout;
     }
 
     @Override
-    public Session open() {
+    public WrappedCassandraSession open() {
         if ( cluster == null || session == null ) {
             Builder builder = Cluster.builder();
             builder.addContactPoints( hosts );
@@ -47,7 +49,7 @@ public final class DirectClusterWrapper implements CassandraClusterWrapper {
             cluster = builder.build();
             session = cluster.connect( keyspace );
         }
-        return session;
+        return new WrappedCassandraSession(session, waitAfterWriteTimeout);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class CassandraAccessLayerReadOnlyTest {
     public RetentionConfiguration retentionConfiguration;
 
     @Mock
-    public Session session;
+    public CassandraSession session;
 
     public boolean anyDryRunValue = true;
 
@@ -40,7 +40,7 @@ public class CassandraAccessLayerReadOnlyTest {
     @Before
     public void createSubject() {
         MockitoAnnotations.initMocks(this);
-        subject = new CassandraAccessLayer(cluster, retentionConfiguration, anyDryRunValue, waitBetweenWrites);
+        subject = new CassandraAccessLayer(cluster, retentionConfiguration, anyDryRunValue);
     }
 
     @Test

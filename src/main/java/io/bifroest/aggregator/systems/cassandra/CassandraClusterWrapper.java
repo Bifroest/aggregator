@@ -11,7 +11,7 @@ import com.datastax.driver.core.TableMetadata;
  * meaningful stuff here.
  */
 public interface CassandraClusterWrapper {
-    Session open();
+    CassandraSession open();
     Collection<String> getTableNames();
     void close();
 }

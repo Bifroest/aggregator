@@ -10,11 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.Statement;
-import com.datastax.driver.core.exceptions.WriteTimeoutException;
-import com.datastax.driver.core.querybuilder.Clause;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
 import io.bifroest.commons.model.Metric;
 import io.bifroest.commons.statistics.eventbus.EventBusManager;
 import io.bifroest.aggregator.systems.cassandra.statistics.CreateTableEvent;
@@ -26,22 +21,19 @@ public class CassandraAccessLayer {
 
     private static final Logger log = LogManager.getLogger();
 
-    private static final String COL_NAME = "metric";
-    private static final String COL_TIME = "timestamp";
-    private static final String COL_VALUE = "value";
-
-    private final Duration waitAfterWriteTimeout;
+    static final String COL_NAME = "metric";
+    static final String COL_TIME = "timestamp";
+    static final String COL_VALUE = "value";
 
     private final RetentionConfiguration retention;
     private final CassandraClusterWrapper wrappedCluster;
-    private Session session = null;
+    private CassandraSession cassandraSession;
 
     private final boolean dryRun;
 
-    public CassandraAccessLayer( CassandraClusterWrapper wrappedCluster, RetentionConfiguration retention, boolean dryRun, Duration waitAfterWriteTimeout ) {
+    public CassandraAccessLayer( CassandraClusterWrapper wrappedCluster, RetentionConfiguration retention, boolean dryRun)  {
         this.retention = retention;
         this.dryRun = dryRun;
-        this.waitAfterWriteTimeout = waitAfterWriteTimeout;
         this.wrappedCluster = wrappedCluster;
 
         if ( dryRun ) {
@@ -50,13 +42,13 @@ public class CassandraAccessLayer {
     }
 
     public void open() {
-        session = wrappedCluster.open();
+        cassandraSession = wrappedCluster.open();
     }
 
     public void close() {
-        if ( session != null ) {
-            session.close();
-            session = null;
+        if (cassandraSession != null ) {
+            cassandraSession.close();
+            cassandraSession = null;
         }
         if ( wrappedCluster != null ) {
             wrappedCluster.close();
@@ -80,11 +72,10 @@ public class CassandraAccessLayer {
     }
 
     public Iterable<String> loadMetricNames( RetentionTable table ) {
-        if ( session == null ) {
+        if (cassandraSession == null ) {
             open();
         }
-        Statement stm = QueryBuilder.select().distinct().column( COL_NAME ).from( table.tableName() );
-        final Iterator<Row> iter = session.execute( stm ).iterator();
+        final Iterator<Row> iter = cassandraSession.loadNamesFromTable(table);
         return new Iterable<String>() {
 
             @Override
@@ -112,12 +103,10 @@ public class CassandraAccessLayer {
     }
 
     public Iterable<Metric> loadUnorderedMetrics( RetentionTable table, String name ) {
-        if ( session == null ) {
+        if (cassandraSession == null ) {
             open();
         }
-        Clause cName = QueryBuilder.eq( COL_NAME, name );
-        Statement stm = QueryBuilder.select().all().from( table.tableName() ).where( cName );
-        final Iterator<Row> iter = session.execute( stm ).iterator();
+        final Iterator<Row> iter = cassandraSession.loadMetricsFromTable(table, name);
         return new Iterable<Metric>() {
 
             @Override
@@ -144,39 +133,24 @@ public class CassandraAccessLayer {
         };
     }
 
+
     public void insertMetrics( RetentionTable table, Collection<Metric> metrics ) {
         if ( dryRun ) {
             log.debug( "Inserting " + metrics.toString() + " into " + table );
             return;
         }
 
-        if ( session == null ) {
+        if (cassandraSession == null ) {
             open();
         }
 
         for ( Metric metric : metrics ) {
-            String[] columns = { COL_NAME, COL_TIME, COL_VALUE };
-            Object[] values = { metric.name(), metric.timestamp(), metric.value() };
-            Statement stm = QueryBuilder.insertInto( table.tableName() ).values( columns, values );
-
-            try {
-                session.execute( stm );
-            } catch ( WriteTimeoutException e ) {
-                log.info( "WriteTimeoutException while sending Metrics to cassandra." );
-                log.info( e.getMessage() );
-                log.info( "According to http://www.datastax.com/dev/blog/how-cassandra-deals-with-replica-failure, this is harmless" );
-
-                try {
-                    Thread.sleep( waitAfterWriteTimeout.toMillis() );
-                } catch ( InterruptedException e1 ) {
-                    // ignore
-                }
-            }
+            cassandraSession.insertMetric(table, metric);
         }
     }
 
     public void createTableIfNecessary( RetentionTable table ) {
-        if ( session == null ) {
+        if (cassandraSession == null ) {
             open();
         }
         Collection<String> tableNames = wrappedCluster.getTableNames();
@@ -191,14 +165,7 @@ public class CassandraAccessLayer {
             return;
         }
 
-        StringBuilder query = new StringBuilder();
-        query.append( "CREATE TABLE IF NOT EXISTS " ).append( table.tableName() ).append( " (" );
-        query.append( COL_NAME ).append( " text, " );
-        query.append( COL_TIME ).append( " bigint, " );
-        query.append( COL_VALUE ).append( " double, " );
-        query.append( "PRIMARY KEY (" ).append( COL_NAME ).append( ", " ).append( COL_TIME ).append( ")" );
-        query.append( ");" );
-        session.execute( query.toString() );
+        cassandraSession.createTable(table);
         EventBusManager.fire( new CreateTableEvent( System.currentTimeMillis(), table ) );
     }
 
@@ -208,11 +175,10 @@ public class CassandraAccessLayer {
             return;
         }
 
-        if ( session == null ) {
+        if (cassandraSession == null ) {
             open();
         }
-        session.execute( "DROP TABLE " + table.tableName() + ";" );
+        cassandraSession.dropTableInDatabase(table);
         EventBusManager.fire( new DropTableEvent( System.currentTimeMillis(), table ) );
     }
-
 }
