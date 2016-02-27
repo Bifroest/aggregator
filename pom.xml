@@ -81,7 +81,7 @@
           </systemProperties>
           <arguments>
             <argument>test/config/</argument>
-            <argument>io.bifroest.aggregator.systems.AggregatorEnvironment</argument>
+            <argument>io.bifroest.aggregator.AggregatorEnvironment</argument>
           </arguments>
         </configuration>
       </plugin>
